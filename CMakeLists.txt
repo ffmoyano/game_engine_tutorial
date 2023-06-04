@@ -1,0 +1,16 @@
+cmake_minimum_required(VERSION 3.25)
+project(game_engine_tutorial)
+
+set(CMAKE_CXX_STANDARD 23)
+set(SOURCES src/main.cpp src/Game.cpp)
+set(SDL2_INCLUDE_DIR C:/SDL2/x86_64-w64-mingw32/include/SDL2)
+set(SDL2_LIBRARY_DIR C:/SDL2/x86_64-w64-mingw32/lib)
+set(ROOT ./)
+
+include_directories(${SDL2_INCLUDE_DIR} libs/glm libs/imgui libs/lua libs/sol)
+
+link_directories(${SDL2_LIBRARY_DIR} libs/glm libs/imgui libs/lua libs/sol)
+
+add_executable(game_engine_tutorial ${SOURCES})
+
+target_link_libraries(${PROJECT_NAME} -lmingw32 ${SDL2_LIBRARY_DIR}/libSDL2main.a SDL2.dll SDL2_image.dll SDL2_ttf.dll SDL2_mixer.dll lua54.dll -mwindows)
