@@ -43,7 +43,7 @@ void Game::initialize() {
         return;
     }
     // use this for real fullscreen
-     SDL_SetWindowFullscreen(window, SDL_WINDOW_FULLSCREEN);
+    SDL_SetWindowFullscreen(window, SDL_WINDOW_FULLSCREEN);
 
     isRunning = true;
 }
@@ -83,9 +83,16 @@ void Game::processInput() {
 
 
 void Game::update() {
-    std::cout << playerPosition.x << '\n';
+    // if we are too fast, waste some time until we reach the MILLISECS_PER_FRAME
+    uint32_t timeToWait {MILLISECS_PER_FRAME - (SDL_GetTicks() - millisecsPreviousFrame)};
+    if (timeToWait > 0 && timeToWait <= MILLISECS_PER_FRAME) {
+        SDL_Delay(timeToWait);
+    }
+
+    // store the current frame time
+    millisecsPreviousFrame = SDL_GetTicks();
+
     playerPosition.x += playerVelocity.x;
-    std::cout << playerPosition.x << '\n';
     playerPosition.y += playerVelocity.y;
 };
 

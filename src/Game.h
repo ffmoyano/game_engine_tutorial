@@ -3,9 +3,13 @@
 
 #include <SDL.h>
 
+constexpr int FPS{60};
+constexpr int MILLISECS_PER_FRAME = 1000 / FPS;
+
 class Game {
 private:
     bool isRunning;
+    uint32_t millisecsPreviousFrame{0};
     SDL_Window *window{};
     SDL_Renderer *renderer{};
 public:
