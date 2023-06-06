@@ -43,7 +43,7 @@ void Game::initialize() {
         return;
     }
     // use this for real fullscreen
-    SDL_SetWindowFullscreen(window, SDL_WINDOW_FULLSCREEN);
+//    SDL_SetWindowFullscreen(window, SDL_WINDOW_FULLSCREEN);
 
     isRunning = true;
 }
@@ -62,7 +62,7 @@ glm::vec2 playerVelocity;
 
 void Game::setup() {
     playerPosition = glm::vec2(10.0, 20.0);
-    playerVelocity = glm::vec2(1.0, 0.0);
+    playerVelocity = glm::vec2(100.0, 0.0);
 }
 
 void Game::processInput() {
@@ -84,23 +84,27 @@ void Game::processInput() {
 
 void Game::update() {
     // if we are too fast, waste some time until we reach the MILLISECS_PER_FRAME
-    uint32_t timeToWait {MILLISECS_PER_FRAME - (SDL_GetTicks() - millisecsPreviousFrame)};
-    if (timeToWait > 0 && timeToWait <= MILLISECS_PER_FRAME) {
-        SDL_Delay(timeToWait);
-    }
+    // UNCOMMENT TO CAP FPS
+//    uint32_t timeToWait{MILLISECS_PER_FRAME - (SDL_GetTicks() - millisecsPreviousFrame)};
+//    if (timeToWait > 0 && timeToWait <= MILLISECS_PER_FRAME) {
+//        SDL_Delay(timeToWait);
+//    }
 
+    // difference in ticks since the last frame converted to seconds
+    // delta time helps the game speed to be the same regardless of FPS
+    double deltaTime{(SDL_GetTicks() - millisecsPreviousFrame) / 1000.0};
     // store the current frame time
     millisecsPreviousFrame = SDL_GetTicks();
 
-    playerPosition.x += playerVelocity.x;
-    playerPosition.y += playerVelocity.y;
+    playerPosition.x += playerVelocity.x * deltaTime;
+    playerPosition.y += playerVelocity.y * deltaTime;
 };
 
 void Game::render() {
     SDL_SetRenderDrawColor(renderer, 21, 21, 21, 255);
     SDL_RenderClear(renderer);
 
-    SDL_Surface *surface = IMG_Load("../assets/images/tank-tiger-right.png");
+    SDL_Surface *surface = IMG_Load("./assets/images/tank-tiger-right.png");
     SDL_Texture *texture = SDL_CreateTextureFromSurface(renderer, surface);
     SDL_FreeSurface(surface);
 

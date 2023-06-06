@@ -1,9 +1,8 @@
-#ifndef GAME_ENGINE_TUTORIAL_H
-#define GAME_ENGINE_TUTORIAL_H
+#pragma once
 
 #include <SDL.h>
 
-constexpr int FPS{60};
+constexpr int FPS{144};
 constexpr int MILLISECS_PER_FRAME = 1000 / FPS;
 
 class Game {
@@ -34,6 +33,3 @@ public:
     int windowWidth;
     int windowHeight;
 };
-
-
-#endif
