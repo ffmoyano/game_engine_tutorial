@@ -2,7 +2,7 @@ cmake_minimum_required(VERSION 3.25)
 project(game_engine_tutorial)
 
 set(CMAKE_CXX_STANDARD 23)
-set(SOURCES src/main.cpp src/Game.cpp)
+set(SOURCES src/main.cpp src/game.cpp src/logger.h src/logger.cpp)
 set(SDL2_INCLUDE_DIR C:/SDL2/x86_64-w64-mingw32/include/SDL2)
 set(SDL2_LIBRARY_DIR C:/SDL2/x86_64-w64-mingw32/lib)
 set(ROOT ./)
