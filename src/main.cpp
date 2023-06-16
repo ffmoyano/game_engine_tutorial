@@ -1,5 +1,5 @@
 #include <SDL.h>
-#include "game.h"
+#include "game/Game.h"
 
 
 // on windows is necessary to put argc and argv

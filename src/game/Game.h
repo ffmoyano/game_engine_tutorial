@@ -30,6 +30,6 @@ public:
 
     void destroy();
 
-    int windowWidth;
-    int windowHeight;
+    int windowWidth{};
+    int windowHeight{};
 };

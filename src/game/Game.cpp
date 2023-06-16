@@ -2,12 +2,13 @@
 #include <SDL_image.h>
 #include <iostream>
 #include <glm.hpp>
-#include "game.h"
-#include "logger.h"
-
+#include "Game.h"
+#include "../logger/Logger.h"
+#include "../ECS/ECS.h"
 
 Game::Game() {
     isRunning = false;
+
     Logger::log("Game constructor called.");
 }
 
@@ -59,12 +60,10 @@ void Game::run() {
     }
 };
 
-glm::vec2 playerPosition;
-glm::vec2 playerVelocity;
-
 void Game::setup() {
-    playerPosition = glm::vec2(10.0, 20.0);
-    playerVelocity = glm::vec2(100.0, 0.0);
+    // TODO:zrtujsrtusu
+    // Entity tank
+
 }
 
 void Game::processInput() {
@@ -98,29 +97,13 @@ void Game::update() {
     // store the current frame time
     millisecsPreviousFrame = SDL_GetTicks();
 
-    playerPosition.x += playerVelocity.x * deltaTime;
-    playerPosition.y += playerVelocity.y * deltaTime;
 };
 
 void Game::render() {
     SDL_SetRenderDrawColor(renderer, 21, 21, 21, 255);
     SDL_RenderClear(renderer);
 
-    SDL_Surface *surface = IMG_Load("./assets/images/tank-tiger-right.png");
-    SDL_Texture *texture = SDL_CreateTextureFromSurface(renderer, surface);
-    SDL_FreeSurface(surface);
 
-    SDL_Rect dstRect{
-            static_cast<int>(playerPosition.x),
-            static_cast<int>(playerPosition.y),
-            32,
-            32
-    }; // tank is 32x32 pixels
-
-// if we want to pass the full image as our srcRect we can pass NULL
-    SDL_RenderCopy(renderer, texture, NULL, &dstRect);
-
-    SDL_DestroyTexture(texture);
 
     SDL_RenderPresent(renderer);
 };
