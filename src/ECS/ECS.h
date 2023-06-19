@@ -5,10 +5,11 @@
 #include <vector>
 #include <typeindex>
 #include <unordered_map>
+#include <set>
 
 const unsigned int MAX_COMPONENTS = 32;
 
-// Siganture: we use a bitset (1s and 0s)
+// Signature: we use a bitset (1s and 0s)
 // to keep track of which components an entity has
 // and also helps keep track of which entites a system is interested in.
 typedef std::bitset<MAX_COMPONENTS> Signature;
@@ -128,6 +129,9 @@ private:
     // keep track of how many entities were added to the scene
     int numEntities = 0;
 
+    std::set<Entity> entitiesToAdd; // entities awaiting creation in the next registry update();
+    std::set<Entity> entitiesToRemove; // entities awaiting destruction in the next registry update();
+
     // Vector of component pools
     // each pool contains all the data for a certain component type
     // [vector index = componentId], [pool index = entityId]
@@ -140,6 +144,24 @@ private:
 
     // Map of active systems [index = system typeId]
     std::unordered_map<std::type_index, System *> systems;
+
+
 public:
     Registry() = default;
+
+    Entity createEntity();
+
+    void killEntity(Entity entity);
+
+    template<typename T, typename ...TArgs>
+    void addComponent(Entity entity, TArgs &&...args);
+
+    template<typename T>
+    void removeComponent(Entity entity);
+
+    template<typename T>
+    bool hasComponent(Entity entity) const;
+
+    template<typename T>
+    T &getComponent(Entity entity) const;
 };
