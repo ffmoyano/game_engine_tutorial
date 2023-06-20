@@ -1,5 +1,8 @@
+#include <memory>
 #include "ECS.h"
 #include "../logger/Logger.h"
+
+int BaseComponent::nextId = 0;
 
 int Entity::getId() const {
     return id;
@@ -16,6 +19,7 @@ void System::addEntity(Entity entity) {
 }
 
 void System::RemoveEntity(Entity entityToRemove) {
+
 //    entities.erase(
 //            std::remove_if(
 //                    entities.begin(), entities.end(),
@@ -49,26 +53,26 @@ Entity Registry::createEntity() {
     return entity;
 }
 
-template <typename T, typename ...TArgs>
+template<typename T, typename ...TArgs>
 void Registry::addComponent(Entity entity, TArgs &&...args) {
     const auto componentId = Component<T>::getId();
     const auto entityId = entity.getId();
     // if the component id is greater than the current size of the componentPools, then resize the vector
-    if(componentId >= componentPools.size()) {
-        componentPools.resize(componentId +1, nullptr);
+    if (componentId >= componentPools.size()) {
+        componentPools.resize(componentId + 1, nullptr);
     }
 
     // if we still dont't have a pool for that component type
-    if(!componentPools(componentId)){
-        auto* newPool = new Pool<T>();
+    if (!componentPools(componentId)) {
+        auto *newPool = new Pool<T>();
         componentPools[componentId] = newPool;
     }
 
     // get the pool of component values for that component type
-    auto* componentPool = Pool<T>(componentPools[componentId]);
+    auto *componentPool = Pool<T>(componentPools[componentId]);
 
     // if the entity id is greater than the current size of the component pool, then resize the pool
-    if(entityId >= componentPool->getSize()) {
+    if (entityId >= componentPool->getSize()) {
         componentPool->resize(numEntities);
     }
 
@@ -80,4 +84,55 @@ void Registry::addComponent(Entity entity, TArgs &&...args) {
 
     // change the component signature of the entity and set the component id on the bitset to 1
     entityComponentSignatures[entityId].set(componentId);
- }
+}
+
+template<typename T>
+void Registry::removeComponent(Entity entity) {
+    const auto componentId = Component<T>::getId();
+    const auto entityId = entity.getId();
+    entityComponentSignatures[entityId].set(componentId, false);
+}
+
+template<typename T>
+bool Registry::hasComponent(Entity entity) const {
+    const auto componentId = Component<T>::getId();
+    const auto entityId = entity.getId();
+    return entityComponentSignatures[entityId].test(componentId);
+}
+
+template<typename T, typename ...TArgs>
+void Registry::addSystem(TArgs &&...args) {
+    auto* newSystem(new T(std::forward<TArgs>(args)...));
+    systems.insert(std::make_pair(std::type_index(typeid(T)),newSystem));
+}
+
+template<typename T>
+void Registry::removeSystem() {
+    auto system = systems.find(std::type_index(typeid(T)));
+    systems.erase(system);
+}
+
+template<typename T>
+bool Registry::hasSystem() const {
+    return systems.find(std::type_index(typeid(T))) != systems.end();
+}
+
+template<typename T>
+T& Registry::getSystem() const {
+    auto system = systems.find(std::type_index(typeid(T)));
+    return *(std::static_pointer_cast<T>(system->second));  //first -> key, second -> value;
+}
+
+void Registry::addEntityToSystems(Entity entity) {
+    const auto entityId = entity.getId();
+    const auto& entityComponentSignature = entityComponentSignatures[entityId];
+
+    for (auto& system: systems) {
+        const auto& systemComponentSignature = system.second->getComponentSignature(); // second is the value, first the key
+        // bitwise comparison, if all values coincide returns true
+        bool isInterested = (entityComponentSignature & systemComponentSignature) == systemComponentSignature;
+        if(isInterested) {
+            system.second->addEntity(entity);
+        }
+    }
+}

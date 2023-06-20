@@ -21,8 +21,9 @@ protected:
 
 template<typename T>
 class Component : public BaseComponent {
+    // returns the unique id of each different Component<T>
     static int getId() {
-        static auto id = nextId++;
+        static auto id = ++nextId;
         return id;
     }
 };
@@ -162,6 +163,18 @@ public:
     template<typename T>
     bool hasComponent(Entity entity) const;
 
+    template<typename T, typename ...TArgs>
+    void addSystem(TArgs &&...args);
+
     template<typename T>
-    T &getComponent(Entity entity) const;
+    void removeSystem();
+
+    template<typename T>
+    bool hasSystem() const;
+
+    template<typename T>
+    T &getSystem() const;
+
+    // check the component signature of an entity and add the entity to the systems that are interested in it
+    void addEntityToSystems(Entity entity);
 };
